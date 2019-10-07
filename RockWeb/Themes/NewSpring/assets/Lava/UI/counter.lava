@@ -1,0 +1,32 @@
+{%- assign wrapperId = uniqueid -%}
+
+
+<div class="numberincrement numinc-{{ wrapperId }} margin-t-sm input-lg hard-sides text-center push-half-bottom">
+
+    <input type="hidden" value="1">
+
+    <a data-increment="{{ wrapperId }}" data-incrementdirection="down" data-incrementmin="1" class="numberincrement-down text-decoration-none"><i class="fa fa-minus " aria-hidden="true"></i></a><span data-incrementlabel="{{ wrapperId }}" class="numberincrement-value">1</span><a data-increment="{{ wrapperId }}" data-incrementdirection="up" data-incrementmax="5" class="numberincrement-up text-decoration-none"><i class="fa fa-plus " aria-hidden="true"></i></a>
+
+</div>
+
+<script>
+    var label = document.querySelector('[data-incrementlabel="{{ wrapperId }}"]');
+
+    function changeCounter(target, direction) {
+        console.log(this);
+        var count = parseInt(label.innerText, 10);
+        var min = this.dataset.incrementmin;
+        var max = this.dataset.incrementmax;
+
+        if(direction == 'up' && count < max) {
+            label.innerText = count + 1;
+        } 
+        else if(direction == 'down' && count > min) {
+            label.innerText = count - 1;
+        }
+    }
+
+    $('[data-increment="{{ wrapperId }}"]').on('click',function(e){
+        changeCounter(e, this.dataset.incrementdirection);
+    });
+</script>

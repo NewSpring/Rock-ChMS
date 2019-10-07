@@ -1,0 +1,88 @@
+<h2>First Time Family Follow-Up</h2>
+<p>The <b>{{ Workflow | Attribute:'FamilyGroup' }}</b> registered with KidSpring at the <b>{{ Workflow | Attribute:'Campus' }}</b> campus on <b>{{ Workflow.CreatedDateTime | Date:'M/d/yyyy' }}.</b> Use their contact information below to follow-up with them about their visit, and invite them back next week!</p>
+
+<hr class="push-ends">
+
+<div class="row">
+{% workflow id:'{{ Workflow.Id }}' iterator:'workflows' %}
+    {% for workflow in workflows %}
+    
+        {% assign address = workflow | Attribute:'Address','Object' %}
+        
+        <div class="col-xs-12 col-md-12">
+            <h3 class="push-half-bottom">The {{ workflow | Attribute:'FamilyGroup' }}</h3>
+            {% if address and address != empty %}<p><b>Address:</b><br>{{ address.Street1 }}{% if address.Street2 != empty %}<br>{{ address.Street2 }}{% endif %}<br>{{ address.City }}, {{ address.State }} {{ address.PostalCode }}</p>{% endif %}
+        </div>
+
+        {% workflowactivity where:'ActivityTypeId == 1928 || ActivityTypeId == 1930 && WorkflowId == {{ workflow.Id }}' iterator:'activities' %}
+            {% for activity in activities %}<div class="col-xs-12 col-md-6 push-half-bottom">
+                <div class="well">
+                {% assign adult = activity | Attribute:'Adult','Object' %}
+                {% assign child = activity | Attribute:'Child','Object' %}
+                {% if adult != empty %}
+                    {% assign person = adult %}
+                {% elseif child != empty %}
+                    {% assign person = child %}
+                {% endif %}
+                {% assign grade = Activity | Attribute:'Grade' %}
+                {% assign phone = person | PhoneNumber:'Mobile' %}
+                
+                {% comment %}If child, get most recent attendance from the past week{% endcomment %}
+
+                {% assign attendedRoom = '' %}
+                {% assign attendedService = '' %}
+                
+                {% if activity.ActivityTypeId == 1930 %}
+                    {% sql %}
+                        SELECT TOP 1 ao.CreatedDateTime, l.Name 'Room', s.Name 'Service'
+                        FROM [Attendance] a
+                        JOIN AttendanceOccurrence ao
+                        ON a.OccurrenceId = ao.Id
+                        JOIN [Group] g
+                        ON ao.GroupId = g.Id
+                        JOIN [Location] l
+                        ON ao.LocationId = l.Id
+                        JOIN Schedule s
+                        ON ao.ScheduleId = s.Id
+                        JOIN PersonAlias pa
+                        ON a.PersonAliasId = pa.Id
+                        JOIN Person p
+                        ON pa.PersonId = p.Id
+                        WHERE p.Id = {{ person.Id }}
+                        AND a.DidAttend = 1
+                        AND g.GroupTypeId IN (85,87,81,90)
+                        ORDER BY a.CreatedDateTime desc
+                    {% endsql %}
+                    {% for result in results %}
+                        {% assign attendedDate = result.CreatedDateTime %}
+                        {% assign attendedRoom = result.Room %}
+                        {% assign attendedService = result.Service %}
+                    {% endfor %}
+                {% endif %}
+                
+                <h4 class="flush">{{ person.FullName }}</h4>
+                <ul class="list-unstyled">
+                    <li><small><a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}Person/{{ person.Id }}" target="_blank">View Profile</a></small></li>
+
+                    {% if activity.ActivityTypeId == 1930 %}
+                        {% if attendedService != empty %}
+                            <li><b>Attended Service:</b> {{ attendedService | Replace:'09:15','9:15' }}</li>
+                        {% endif %}
+                        {% if attendedDate != empty %}
+                            <li title="{{ attendedDate | Date:'M/d/yyyy' }}"><b>Attended Room:</b> {{ attendedRoom }}</li>
+                        {% endif %}
+                    {% endif %}
+
+                    <li><b>Birthdate:</b> {{ person.BirthDate | Date:'M/d/yyyy' }} <span class="text-gray-light italic">({{ person.BirthDate | DateDiff:'Now','Y' }})</span></li>
+                    {% if grade and grade != empty %}<li><b>Grade:</b> {{ grade }}</li>{% endif %}
+                    {% if phone and phone != empty %}<li><b>Phone:</b> <a href="tel:+1{{ phone | Remove:'(' | Remove:')' | Remove:' ' | Remove:'-' }}">{{ phone }}</a></li>{% endif %}
+                    {% if person.Email != empty %}<li><b>Email:</b> <a href="mailto:{{ person.Email }}">{{ person.Email }}</a></li>{% endif %}
+                </ul>
+                </div>
+
+            </div>{% endfor %}
+        {% endworkflowactivity %}
+        
+    {% endfor %}
+{% endworkflow %}
+</div>
