@@ -1,0 +1,6 @@
+<div class="progress">
+  <div class="progress-bar {% if striped == 'true' %}progress-bar-striped{% endif %} {% if animated == 'true' %}active{% endif %}" role="progressbar" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percent }}%;">
+    <span class="sr-only">{{ percent }}% Complete</span>
+    {% if percent == 100 %}Complete{% endif %}
+  </div>
+</div>
