@@ -1,0 +1,52 @@
+{%- assign hasEventAccess = false -%}
+{% if CurrentPerson %}
+
+  {%- assign vrxGroup = CurrentPerson | Group:'1993126','All' -%}
+  {%- assign inGroup = vrxGroup | Size -%}
+  {% if inGroup > 0 %}
+    {%- assign hasEventAccess = true -%}
+  {% endif %}
+{% endif %}
+
+{% if CurrentPerson %}
+  {% if hasEventAccess %}
+    <div class="row flush">
+      <div class="col-lg-9 col-md-8 col-sm-12 col-xs-12 hard">
+
+        <div id="resi-video-player" class="js-video" data-embed-id="4259abb2-409f-4864-8296-986982c5fd32"></div>
+        <script type="application/javascript" src="https://control.resi.io/webplayer/loader.min.js"></script>
+
+      </div><div class="js-chat-wrapper col-lg-3 col-md-4 col-sm-12 col-xs-12 hard">
+
+        <iframe src="https://rc.newspring.cc/group/NewSpring-Womens-Conference?layout=embedded" class="js-chat bg-white" style="width:100%;height:600px;"></iframe>
+
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+
+<script>
+  $(document).ready(function(){
+
+    function resizeChat() {
+      let videoHeight = $('.js-video').outerHeight();
+      if(videoHeight == 0 || videoHeight < 300) {
+        videoHeight = 540;
+      }
+      $('.js-chat-wrapper').outerHeight(videoHeight);
+      $('.js-chat').outerHeight(videoHeight);
+    }
+
+    resizeChat();
+
+    window.onresize = resizeChat;
+
+  });
+</script>
+
+<style>
+  .row-inline .col-xs-1, .row-inline .col-sm-1, .row-inline .col-md-1, .row-inline .col-lg-1, .row-inline .col-xs-2, .row-inline .col-sm-2, .row-inline .col-md-2, .row-inline .col-lg-2, .row-inline .col-xs-3, .row-inline .col-sm-3, .row-inline .col-md-3, .row-inline .col-lg-3, .row-inline .col-xs-4, .row-inline .col-sm-4, .row-inline .col-md-4, .row-inline .col-lg-4, .row-inline .col-xs-5, .row-inline .col-sm-5, .row-inline .col-md-5, .row-inline .col-lg-5, .row-inline .col-xs-6, .row-inline .col-sm-6, .row-inline .col-md-6, .row-inline .col-lg-6, .row-inline .col-xs-7, .row-inline .col-sm-7, .row-inline .col-md-7, .row-inline .col-lg-7, .row-inline .col-xs-8, .row-inline .col-sm-8, .row-inline .col-md-8, .row-inline .col-lg-8, .row-inline .col-xs-9, .row-inline .col-sm-9, .row-inline .col-md-9, .row-inline .col-lg-9, .row-inline .col-xs-10, .row-inline .col-sm-10, .row-inline .col-md-10, .row-inline .col-lg-10, .row-inline .col-xs-11, .row-inline .col-sm-11, .row-inline .col-md-11, .row-inline .col-lg-11, .row-inline .col-xs-12, .row-inline .col-sm-12, .row-inline .col-md-12, .row-inline .col-lg-12 {
+    display: inline;
+    float: left;
+}
+</style>

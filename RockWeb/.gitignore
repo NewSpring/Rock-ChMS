@@ -5,6 +5,8 @@
 
 /bin/*.pdb
 /bin/*.xml
+/Content/RocketChat
+/Webhooks/RocketChatMessages.ashx
 
 /*.suo
 /*.user
