@@ -43,8 +43,6 @@ TestResults/
 
 
 /RockWeb/Plugins/*
-!/RockWeb/Plugins/cc_newspring
-/RockWeb/Plugins/cc_newspring/AttendedCheckin
 Packages/*
 
 # javascript deps
